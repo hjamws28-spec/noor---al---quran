@@ -38,7 +38,8 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Prepare Capacitor Android
-        run: |
+        run: |      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
           npx cap add android
           npx cap sync android
 
