@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#eaf5ff">
+<title>نور القرآن</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Tahoma,sans-serif;
+  background:#f4f9ff;
+  color:#173b50;
+}
+header{
+  background:linear-gradient(135deg,#d9efff,#e7f7ed);
+  text-align:center;
+  padding:28px 15px;
+  border-radius:0 0 28px 28px;
+}
+header h1{margin:0 0 8px;color:#176b61}
+header p{margin:0}
+main{max-width:650px;margin:auto;padding:16px}
+.card{
+  background:white;
+  padding:18px;
+  margin:12px 0;
+  border-radius:18px;
+  box-shadow:0 3px 14px #153d5010;
+}
+h2{font-size:19px;margin-top:0}
+button{
+  border:0;
+  border-radius:12px;
+  padding:12px 15px;
+  margin:5px 3px;
+  background:#187c70;
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+}
+select{
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #cbdde8;
+  max-width:100%;
+}
+#ayahs{
+  font-size:23px;
+  line-height:2.2;
+  text-align:center;
+}
+.note{color:#607987;font-size:14px}
+footer{text-align:center;padding:20px;color:#607987}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>☪ نور القرآن</h1>
+  <p>نورٌ لقلوبنا وطمأنينةٌ لأرواحنا</p>
+</header>
+
+<main>
+
+<section class="card">
+  <h2>📖 القرآن الكريم</h2>
+  <label for="surah">اختر السورة:</label>
+  <select id="surah"></select>
+  <div id="ayahs">بسم الله الرحمن الرحيم</div>
+  <button onclick="loadSurah()">عرض السورة</button>
+  <p class="note" id="quranStatus">
+    يلزم الاتصال بالإنترنت لتحميل نص القرآن.
+  </p>
+</section>
+
+<section class="card">
+  <h2>🎧 استمع إلى القرآن الكريم</h2>
+  <p>اختر قارئك المفضل من القراء المتاحين في مكتبة التلاوات.</p>
+  <button onclick="openRecitations()">مكتبة التلاوات</button>
+  <p class="note">التشغيل والتنزيل يحتاجان إلى مصدر صوتي متاح.</p>
+</section>
+
+<section class="card">
+  <h2>🕌 مواقيت الصلاة والأذان</h2>
+  <p id="location">يمكنك تحديد المدينة لمعرفة مواقيت الصلاة.</p>
+  <button onclick="getPrayerTimes()">عرض مواقيت الصلاة</button>
+  <div id="prayers"></div>
+  <p class="note">تحتاج المواقيت إلى الإنترنت لتحديثها.</p>
+</section>
+
+<section class="card">
+  <h2>📚 تفسير الآيات</h2>
+  <p>تعرف على معاني الآيات بالرجوع إلى مصادر التفسير الموثوقة.</p>
+  <button onclick="openTafsir()">فتح مكتبة التفسير</button>
+</section>
+
+<section class="card">
+  <h2>📗 تعلم التجويد</h2>
+  <p>تعلم أحكام النون الساكنة والتنوين، والميم الساكنة، والمدود والقلقلة.</p>
+  <button onclick="showTajweed()">عرض أحكام التجويد</button>
+  <div id="tajweed"></div>
+</section>
+
+<section class="card">
+  <h2>🤲 الأذكار والأدعية</h2>
+  <p>سبحان الله وبحمده، سبحان الله العظيم.</p>
+  <p>اللهم أعنّا على ذكرك وشكرك وحسن عبادتك.</p>
+</section>
+
+</main>
+
+<footer>نور القرآن — نسأل الله القبول والنفع</footer>
+
+<script>
+const surahs = [
+"الفاتحة","البقرة","آل عمران","النساء","المائدة",
+"الأنعام","الأعراف","الأنفال","التوبة","يونس",
+"هود","يوسف","الرعد","إبراهيم","الحجر",
+"النحل","الإسراء","الكهف","مريم","طه",
+"الأنبياء","الحج","المؤمنون","النور","الفرقان",
+"الشعراء","النمل","القصص","العنكبوت","الروم",
+"لقمان","السجدة","الأحزاب","سبأ","فاطر",
+"يس","الصافات","ص","الزمر","غافر",
+"فصلت","الشورى","الزخرف","الدخان","الجاثية",
+"الأحقاف","محمد","الفتح","الحجرات","ق",
+"الذاريات","الطور","النجم","القمر","الرحمن",
+"الواقعة","الحديد","المجادلة","الحشر","الممتحنة",
+"الصف","الجمعة","المنافقون","التغابن","الطلاق",
+"التحريم","الملك","القلم","الحاقة","المعارج",
+"نوح","الجن","المزمل","المدثر","القيامة",
+"الإنسان","المرسلات","النبأ","النازعات","عبس",
+"التكوير","الانفطار","المطففين","الانشقاق","البروج",
+"الطارق","الأعلى","الغاشية","الفجر","البلد",
+"الشمس","الليل","الضحى","الشرح","التين",
+"العلق","القدر","البينة","الزلزلة","العاديات",
+"القارعة","التكاثر","العصر","الهمزة","الفيل",
+"قريش","الماعون","الكوثر","الكافرون","النصر",
+"المسد","الإخلاص","الفلق","الناس"
+];
+
+const select = document.getElementById("surah");
+surahs.forEach((name,index)=>{
+  const option=document.createElement("option");
+  option.value=index+1;
+  option.textContent=(index+1)+" - "+name;
+  select.appendChild(option);
+});
+
+async function loadSurah(){
+  const number=select.value;
+  const display=document.getElementById("ayahs");
+  const status=document.getElementById("quranStatus");
+  display.textContent="جارٍ تحميل السورة...";
+  try{
+    const response=await fetch(
+      "https://api.alquran.cloud/v1/surah/"+number
+    );
+    if(!response.ok) throw new Error();
+    const data=await response.json();
+    if(data.code!==200) throw new Error();
+    display.textContent=data.data.ayahs
+      .map(a=>a.text+" ﴿"+a.numberInSurah+"﴾")
+      .join(" ");
+    status.textContent="تم تحميل نص السورة.";
+  }catch(error){
+    display.textContent="تعذر تحميل السورة. تحقق من اتصال الإنترنت.";
+    status.textContent="لم يتم تحميل نص القرآن.";
+  }
+}
+
+function openRecitations(){
+  window.open("https://quran.com/reciters","_blank");
+}
+function openTafsir(){
+  window.open("https://quran.com/tafsirs","_blank");
+}
+function showTajweed(){
+  document.getElementById("tajweed").innerHTML=
+    "<p><b>أحكام النون الساكنة والتنوين:</b> الإظهار، الإدغام، الإقلاب، الإخفاء.</p>"+
+    "<p><b>أحكام الميم الساكنة:</b> الإخفاء الشفوي، الإدغام الشفوي، الإظهار الشفوي.</p>"+
+    "<p>تعلم الأحكام مع معلم متقن، واستمع إلى التلاوة للتطبيق الصحيح.</p>";
+}
+async function getPrayerTimes(){
+  const city=prompt("أدخل اسم المدينة:");
+  if(!city)return;
+  const box=document.getElementById("prayers");
+  box.textContent="جارٍ تحميل المواقيت...";
+  try{
+    const response=await fetch(
+      "https://api.aladhan.com/v1/timingsByCity?city="+
+      encodeURIComponent(city)+"&country=&method=3"
+    );
+    const result=await response.json();
+    if(result.code!==200)throw new Error();
+    const t=result.data.timings;
+    box.innerHTML=["Fajr","Dhuhr","Asr","Maghrib","Isha"]
+      .map((key,i)=>"<p>"+["الفجر","الظهر","العصر","المغرب","العشاء"][i]+
+      ": "+t[key]+"</p>").join("");
+    document.getElementById("location").textContent=
+      "مواقيت الصلاة في "+city;
+  }catch(error){
+    box.textContent="تعذر تحميل المواقيت. حاول مرة أخرى.";
+  }
+}
+</script>
+
+</body>
+</html>
